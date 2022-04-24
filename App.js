@@ -6,7 +6,6 @@ import LoginScreen from './screens/LoginScreen';
 import CardScreen from './screens/CardScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyScreen from './screens/VerifyScreen';
-import ResetScreen from './screens/PassReset';
 import 'react-native-gesture-handler';
 
 export default class App extends React.Component {
@@ -35,12 +34,6 @@ const AppNavigator = createStackNavigator({
   },
   Verify: {
     screen: VerifyScreen,
-    navigationOptions: {
-      headerShown: false
-    }
-  },
-  Reset: {
-    screen: ResetScreen,
     navigationOptions: {
       headerShown: false
     }
