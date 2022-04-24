@@ -7,7 +7,8 @@
 4. If using linux, also add do in terminal: sudo ufw allow 19000/tcp
 5. From directory you want to use: expo init MobileApp
 6. Use a blank template (first option)
-7. Navigate to directory and run expo: npm start
-8. Press ctrl+d to set it to always open developer mode in browser.
-9. Click tunnel on Connection Type.
-10. Scan the QR code with phone of choice.
+7. Navigate to directory and run: npm install
+8. Then run: npm start
+9. Press ctrl+d to set it to always open developer mode in browser.
+10. Click tunnel on Connection Type.
+11. Scan the QR code with phone of choice.
