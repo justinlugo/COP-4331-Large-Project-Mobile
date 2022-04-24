@@ -62,7 +62,6 @@ export default class Homescreen extends Component {
   {
     var obj = {username:global.loginName,password:global.loginPassword};
 
-    //var obj = {username:global.username,password:global.password};
     var js = JSON.stringify(obj);
     var storage = require('../tokenStorage.js');
     var bp = require('../components/Path.js');
@@ -108,7 +107,7 @@ export default class Homescreen extends Component {
       else
       {
         // Valid user move to /Main
-        this.props.navigation.navigate('Card');
+        this.props.navigation.navigate('Main');
       }
     }
     // JWT not received properly
@@ -131,18 +130,6 @@ export default class Homescreen extends Component {
       this.setState({message: e.message });
     }
   }
-
-  GoToReset = async () =>
-  {
-    try
-    {
-      this.props.navigation.navigate('Reset');
-    }
-    catch(e)
-    {
-      this.setState({message: e.message})
-    }
-  }
   
   changeLoginNameHandler = async (val) =>
   {
@@ -151,7 +138,7 @@ export default class Homescreen extends Component {
 
   changePasswordHandler = async (val) =>
   {
-    global.password = val;
+    global.loginPassword = val;
   }
   
   render(){
