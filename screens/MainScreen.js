@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet } from 'react-native';
 import { isExpired, decodeToken } from "react-jwt";
 
-export default class VerifyScreen extends Component {
+export default class MainScreen extends Component {
 
   constructor() 
   {

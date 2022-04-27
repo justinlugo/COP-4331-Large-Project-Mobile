@@ -1,6 +1,13 @@
 import React, { Component, useState } from 'react';
 import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet } from 'react-native';
-import { isExpired, decodeToken } from "react-jwt";
+
+global.loginName = '';
+global.loginPassword = '';
+global.userId = -1;
+global.firstName = '';
+global.lastName = '';
+global.email = '';
+global.confirmPassword = '';
 
 export default class RegisterScreen extends Component {
 
@@ -13,27 +20,23 @@ export default class RegisterScreen extends Component {
     }
   }
 
-  // RegEx for checking email
-  // Valid email must have: (1char)@(2char).(2char)
-  validEmail = new RegExp(
-      '(.+)@((.+){2,})\.((.+){2,})'
-  );
-
   doRegister = async () => 
   {
       // Creates object for all form fields
-      var obj = {firstName:firstName.value, lastName:lastName.value, username:username.value, 
-                  email:email.value, password:password.value, confirmPassword:confirmPassword.value};
+      var obj = {firstName:global.firstName, lastName:global.lastName, username:global.loginName, 
+                  email:global.email, password:global.loginPassword, confirmPassword:global.confirmPassword};
 
+      // Might not need.
       // Loop through the object and check to make sure the value are not empty
       for(const [key, value] of Object.entries(obj)) 
       {
           // Use string trim function to remove leading and trailing whitespace
-          obj[key] = value.trim();
-
+          //obj[key] = value.trim();
+          obj[key] = value;
           // Check if any entry field is empty and stop the submission and let the user know
           if (obj[key] == "") {
-              setMessage(`${key} is empty`);
+              this.setState({message: 'One or more fields is empty.'})
+              //setMessage(`${key} is empty`);
               return;
           }
       }
@@ -41,14 +44,8 @@ export default class RegisterScreen extends Component {
       // Check if passwords match
       if(obj.password != obj.confirmPassword)
       {
-          setMessage('Passwords do not match');
-          return;
-      }
-      
-      // Check if the email is valid based on RegEx
-      if(!validEmail.test(email.value))
-      {
-          setMessage('Email is not valid');
+          this.setState({message: 'Passwords do not match.'});
+          //setMessage('Passwords do not match');
           return;
       }
       
@@ -72,38 +69,62 @@ export default class RegisterScreen extends Component {
           // Check if error is not empty
           if(res.error != '')
           {
-              setMessage(res.error);
+              this.setState({message: e.message});
+              //setMessage(res.error);
               return;
           }
-
-          // Store the JWT and the user_data
-          var storage = require('../tokenStorage.js');
-          storage.storeToken(res);
-          // Decode the token and store in tokenData
-          const tokenData = decodeToken(storage.retrieveToken());
-          var user = {firstName:tokenData.firstName,lastName:tokenData.lastName,id:tokenData.userId}
-          localStorage.setItem('user_data', JSON.stringify(user));
 
           // Account has been created go to verification page
           this.props.navigation.navigate('Verify');
       }
       catch(e)
       {
-          console.log(e.toString());
+          this.setState({message: e.message});
           return;
       }
   }
 
-  changeSearchHandler = async (val) =>
+  GoToLogin = async () =>
   {
-    global.search = val;
+    try
+    {
+      this.props.navigation.navigate('Login');
+    }
+    catch(e)
+    {
+      this.setState({message: e.message})
+    }
+  }
+
+  changeFirstNameHandler = async (val) =>
+  {
+    global.firstName = val;
   }  
 
-  changeCardHandler = async (val) =>
+  changeLastNameHandler = async (val) =>
   {
-    global.card = val;
+    global.lastName = val;
+  }
+
+  changeLoginNameHandler = async (val) =>
+  {
+    global.loginName = val;
+  }  
+
+  changeEmailHandler = async (val) =>
+  {
+    global.email = val;
   }
   
+  changePasswordHandler = async (val) =>
+  {
+    global.loginPassword = val;
+  }  
+
+  changeConfirmPasswordHandler = async (val) =>
+  {
+    global.confirmPassword = val;
+  }
   
   render(){
     return(
@@ -132,7 +153,7 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200, fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="First Name"
-              //onChangeText={(val) => { this.changeLoginNameHandler(val) }}
+              onChangeText={(val) => { this.changeFirstNameHandler(val) }}
             />        
           </View>
 
@@ -143,7 +164,7 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200,fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="Last Name"
-              //onChangeText={(val) => { this.changeLoginNameHandler(val) }}
+              onChangeText={(val) => { this.changeLastNameHandler(val) }}
             />        
           </View>
 
@@ -154,7 +175,7 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200,fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="Username"
-              //onChangeText={(val) => { this.changeLoginNameHandler(val) }}
+              onChangeText={(val) => { this.changeLoginNameHandler(val) }}
             />        
           </View>
 
@@ -165,7 +186,7 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200,fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="Email"
-              //onChangeText={(val) => { this.changeLoginNameHandler(val) }}
+              onChangeText={(val) => { this.changeEmailHandler(val) }}
             />        
           </View>
 
@@ -177,7 +198,7 @@ export default class RegisterScreen extends Component {
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200,fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="Password"
               secureTextEntry={true}
-              //onChangeText={(val) => { this.changePasswordHandler(val) }}
+              onChangeText={(val) => { this.changePasswordHandler(val) }}
             />
           </View>
 
@@ -188,7 +209,8 @@ export default class RegisterScreen extends Component {
             <TextInput
               style={{height: 30,borderWidth: 1, padding: 4, borderColor: '#000000', width: 200,fontSize:20, backgroundColor:'#ffffff'}}
               placeholder="Confirm Password"
-              //onChangeText={(val) => { this.changeLoginNameHandler(val) }}
+              secureTextEntry={true}
+              onChangeText={(val) => { this.changeConfirmPasswordHandler(val) }}
             />        
           </View>
 
@@ -201,6 +223,14 @@ export default class RegisterScreen extends Component {
           title="Register"
           color='#001A5E'
           onPress={this.doRegister}
+        /> 
+
+        <Text style={{fontSize:10}}> </Text>
+
+        <Button 
+          title="Go Back"
+          color='#001A5E'
+          onPress={this.GoToLogin}
         /> 
 
         <Text style={{fontSize:30}}> </Text>
@@ -240,30 +270,5 @@ const styles = StyleSheet.create({
     width: height_logo,
     height: height_logo,
     //marginBottom: 40,
-  },
-  title: {
-    color: '#001A5E',
-    fontSize: 30,
-    fontWeight: 'bold'
-  },
-  text: {
-    color: 'grey',
-    marginTop: 5
-  },
-  button: {
-    alignItems: 'flex-end',
-    marginTop: 30
-  },
-  signIn: {
-    width: 150,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 50,
-    flexDirection: 'row'
-  },
-  textSign: {
-    color: 'white',
-    fontWeight: 'bold'
   }
 });

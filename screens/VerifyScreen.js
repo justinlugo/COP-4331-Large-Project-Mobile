@@ -12,18 +12,82 @@ export default class VerifyScreen extends Component {
        message: ' '
     }
   }
-  
 
-  
-  changeLoginNameHandler = async (val) =>
-  {
-    global.loginName = val;
-  }  
+  // Verified id: 3
+  // Unverified id: 274
 
-  changePasswordHandler = async (val) =>
+  // Test Login/Password: VerifyTest1, 1234
+
+  CheckConfirm = async () => 
   {
-    global.password = val;
+    var bp = require('../components/Path.js');
+
+    const confirmObj = {id: global.userId};
+
+    try
+    {
+      const checkConfirm = await fetch(bp.buildPath('checkConfirm'), {method:'POST',body:JSON.stringify(confirmObj),headers:{'Content-Type': 'application/json'}});
+      var res = JSON.parse(await checkConfirm.text());
+
+      if (global.emailConfirm == 1)
+      {
+        // Valid user move to /Main
+        this.props.navigation.navigate('Main');
+      }
+      else
+      {
+        this.DoVerify();
+      }
+
+    }
+
+    catch(e)
+    {
+      this.setState({message: 'Test3'}); //e.message});
+      return;
+    }
   }
+
+  
+
+  DoVerify = async () =>
+  {
+    //this.setState({message: 'Sending email.'});
+
+    const obj = {userId: global.userId};
+
+    var js = JSON.stringify(obj);
+    
+    var bp = require('../components/Path.js');
+
+    try
+    {
+      const response = await fetch(bp.buildPath('sendtestmail'), {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.error && res.error.length > 0 )
+      {
+        this.setState({message: 'API Error'});
+      }
+      if (res.error == '')
+      {
+        
+      }
+      else 
+      {
+        this.setState({message: 'Error 1'});
+        return;
+      }
+
+    }
+    catch(e)
+    {
+      this.setState({message: 'Error 2'});
+      return;
+    }
+  }
+  
   
   render(){
     return(
@@ -99,30 +163,5 @@ const styles = StyleSheet.create({
     width: height_logo,
     height: height_logo,
     //marginBottom: 40,
-  },
-  title: {
-    color: '#001A5E',
-    fontSize: 30,
-    fontWeight: 'bold'
-  },
-  text: {
-    color: 'grey',
-    marginTop: 5
-  },
-  button: {
-    alignItems: 'flex-end',
-    marginTop: 30
-  },
-  signIn: {
-    width: 150,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 50,
-    flexDirection: 'row'
-  },
-  textSign: {
-    color: 'white',
-    fontWeight: 'bold'
   }
 });

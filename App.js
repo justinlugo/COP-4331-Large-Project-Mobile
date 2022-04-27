@@ -52,9 +52,15 @@ const AppNavigator = createStackNavigator({
     navigationOptions: {
       headerShown: false
     }
+  },
+  Card : {
+    screen: CardScreen,
+    navigationOptions: {
+      headerShown: false
+    }
   }
 },{
-  initialRouteName: "Activity"
+  initialRouteName: "Login"
 });
 const AppContainer = createAppContainer(AppNavigator);
 const styles = StyleSheet.create({
