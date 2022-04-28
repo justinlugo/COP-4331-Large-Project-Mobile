@@ -133,7 +133,7 @@ export default class SearchActivity extends Component {
             </View>
 
             {/*Cards Load Under Here*/}
-            <View style = {styles.footer}>
+          <View style = {styles.footer}>
               
             <Text> Tourist Attractions: </Text>
 
@@ -144,27 +144,35 @@ export default class SearchActivity extends Component {
                     <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
                   )}
                 />
-
-              <Text> Bowling Alleys: </Text>
-
-                <FlatList  
-                  data={this.state.bowlingList.results}
-                  keyExtractor={(item) => item.place_id}
-                  renderItem={({item}) => (
-                    <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
-                  )}
-                />
-                
-                <Text> Movie Theaters: </Text>
-                
-                <FlatList  
-                  data={this.state.theaterList.results}
-                  keyExtractor={(item) => item.place_id}
-                  renderItem={({item}) => (
-                    <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
-                  )}
-                />
             </View>
+
+            <View style = {styles.footer}>
+  
+                <Text> Bowling Alleys: </Text>
+  
+                  <FlatList  
+                    data={this.state.bowlingList.results}
+                    keyExtractor={(item) => item.place_id}
+                    renderItem={({item}) => (
+                      <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                    )}
+                  />
+              </View>
+
+              <View style = {styles.footer}>
+                  
+                  <Text> Movie Theaters: </Text>
+                  
+                  <FlatList  
+                    data={this.state.theaterList.results}
+                    keyExtractor={(item) => item.place_id}
+                    renderItem={({item}) => (
+                      <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                    )}
+                  />
+              </View>
+
+            
         </View>
 
 
