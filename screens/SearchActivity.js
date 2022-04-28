@@ -2,8 +2,15 @@ import React, { Component, useState } from 'react';
 import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet } from 'react-native';
 import { isExpired, decodeToken } from "react-jwt";
 import {SearchBar } from "react-native-elements";
+import axios from 'axios';
+import { FlatList } from 'react-native-gesture-handler';
 
-export default class VerifyScreen extends Component {
+global.myAddress = '';
+global.latitude = '';
+global.longitude = '';
+global.isError = 0;
+
+export default class SearchActivity extends Component {
 
   constructor() 
   {
@@ -11,21 +18,82 @@ export default class VerifyScreen extends Component {
     this.state = 
     {
        message: ' ',
-       searchValue: ""
+       attractionList: [],
+       bowlingList: [],
+       theaterList: []
+
     }
   }
   
-  SearchActivities = async (val) =>
+  SearchActivities = async () =>
   {
-    try
+    // Translate Address into Lat/Long. For sure works.
+    var shortAddress = global.myAddress.trim();
+    var geoUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + shortAddress + '&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas'; 
+
+
+    await axios.get(geoUrl)
+    .then(function (geoResponse)
     {
-      this.props.navigation.navigate('Main');
-    }
-    catch(e)
+      global.latitude = geoResponse.data.results[0].geometry.location.lat;
+      global.longitude = geoResponse.data.results[0].geometry.location.lng;
+    })
+    .catch(function()
     {
-      this.setState({message: e.message})
+      this.setState({message: 'Invalid Address.'});
+      global.isError = 1;
+    });
+
+    // Gets nearby Activities.
+    if (isError == 0)
+    {
+      var searchUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + global.latitude + '%2C' + global.longitude + '&radius=15000&keyword=tourist_attraction&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas';
+
+      //await axios.get(searchUrl)
+      fetch (searchUrl)
+        .then(response => response.json())
+        .then(result => this.setState({attractionList: result}))
+        .catch(function()
+        {
+          this.setState({message: 'Search Error.'});
+          global.isError = 1;
+        });
+
+        
+        //|bowling_alley|movie_theater
+        var searchUrl2 = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + global.latitude + '%2C' + global.longitude + '&radius=15000&keyword=bowling_alley&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas';
+
+        //await axios.get(searchUrl)
+        fetch (searchUrl2)
+          .then(response => response.json())
+          .then(result => this.setState({bowlingList: result}))
+          .catch(function()
+          {
+            this.setState({message: 'Search Error.'});
+            global.isError = 1;
+          });
+        
+
+        var searchUrl3 = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + global.latitude + '%2C' + global.longitude + '&radius=15000&keyword=movie_theater&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas';
+
+        //await axios.get(searchUrl)
+        fetch (searchUrl3)
+          .then(response => response.json())
+          .then(result => this.setState({theaterList: result}))
+          .catch(function()
+          {
+            this.setState({message: 'Search Error.'});
+            global.isError = 1;
+          });
+          
     }
   }
+
+  changeAddressHandler = async (val) =>
+  {
+    global.myAddress = val;
+  }
+
   
   render(){
     return(
@@ -45,13 +113,11 @@ export default class VerifyScreen extends Component {
           </Text>
           <Text style={{fontSize:5}}> </Text>
 
-          {/* Search Bar*/}
-            <SearchBar
-                placeholder="Your Address Here..."
-                round
-                lightTheme
-                value={this.state.searchValue}
-                onChangeText={(val) => { this.SearchActivities(val) }}
+          <TextInput
+              //style={{height: 30,fontSize:20, backgroundColor:'#ffffff'}}
+              style={{height: 30, borderWidth: 1, padding: 4, borderColor: '#000000', borderRadius: 15, width: 375, fontSize:20, backgroundColor:'#ffffff'}}
+              placeholder="Your Address Here..."
+              onChangeText={(val) => { this.changeAddressHandler(val) }}
             /> 
           
             <View style={{alignItems: 'center'}}>
@@ -68,7 +134,36 @@ export default class VerifyScreen extends Component {
 
             {/*Cards Load Under Here*/}
             <View style = {styles.footer}>
-            
+              
+            <Text> Tourist Attractions: </Text>
+
+              <FlatList  
+                  data={this.state.attractionList.results}
+                  keyExtractor={(item) => item.place_id}
+                  renderItem={({item}) => (
+                    <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                  )}
+                />
+
+              <Text> Bowling Alleys: </Text>
+
+                <FlatList  
+                  data={this.state.bowlingList.results}
+                  keyExtractor={(item) => item.place_id}
+                  renderItem={({item}) => (
+                    <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                  )}
+                />
+                
+                <Text> Movie Theaters: </Text>
+                
+                <FlatList  
+                  data={this.state.theaterList.results}
+                  keyExtractor={(item) => item.place_id}
+                  renderItem={({item}) => (
+                    <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                  )}
+                />
             </View>
         </View>
 

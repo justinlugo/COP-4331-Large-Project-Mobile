@@ -51,7 +51,7 @@ export default class Homescreen extends Component {
       global.firstName = res.firstName;
       global.lastName = res.lastName;
       global.userId = res.userId;
-      global.emailConfirm = res.email.Confirm;
+      global.emailConfirm = res.emailConfirm;
 
       // Checks the error message from server.
       // Lets the user know they must confirm their email before continuing

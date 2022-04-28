@@ -2,8 +2,15 @@ import React, { Component, useState } from 'react';
 import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet } from 'react-native';
 import { isExpired, decodeToken } from "react-jwt";
 import {SearchBar } from "react-native-elements";
+import axios from 'axios';
+import { FlatList } from 'react-native-gesture-handler';
 
-export default class VerifyScreen extends Component {
+global.myAddress = '';
+global.latitude = '';
+global.longitude = '';
+global.isError = 0;
+
+export default class SearchFood extends Component {
 
   constructor() 
   {
@@ -11,20 +18,52 @@ export default class VerifyScreen extends Component {
     this.state = 
     {
        message: ' ',
-       searchValue: ""
+       restaurantList: []
     }
   }
   
-  SearchFoods = async (val) =>
+  SearchFoods = async () =>
   {
-    try
+
+    // Translate Address into Lat/Long. For sure works.
+    var shortAddress = global.myAddress.trim();
+    var geoUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + shortAddress + '&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas'; 
+
+
+    await axios.get(geoUrl)
+    .then(function (geoResponse)
     {
-      this.props.navigation.navigate('Main');
-    }
-    catch(e)
+      global.latitude = geoResponse.data.results[0].geometry.location.lat;
+      global.longitude = geoResponse.data.results[0].geometry.location.lng;
+    })
+    .catch(function()
     {
-      this.setState({message: e.message})
+      this.setState({message: 'Invalid Address.'});
+      global.isError = 1;
+    });
+
+    // Gets nearby restaurants.
+    if (isError == 0)
+    {
+      var searchUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + global.latitude + '%2C' + global.longitude + '&radius=2000&keyword=restaurant&key=AIzaSyB1yyBh87O0jJdpFOvYqrBxXjIpFoJnLas';
+
+      //await axios.get(searchUrl)
+      fetch (searchUrl)
+        .then(response => response.json())
+        .then(result => this.setState({restaurantList: result}))
+        .catch(function()
+        {
+          this.setState({message: 'Search Error.'});
+          global.isError = 1;
+        });
+
+
     }
+  }
+
+  changeAddressHandler = async (val) =>
+  {
+    global.myAddress = val;
   }
   
   render(){
@@ -45,14 +84,12 @@ export default class VerifyScreen extends Component {
           </Text>
           <Text style={{fontSize:5}}> </Text>
 
-          {/* Search Bar*/}
-            <SearchBar
-                placeholder="Your Address Here..."
-                round
-                lightTheme
-                value={this.state.searchValue}
-                onChangeText={(val) => { this.SearchFoods(val) }}
-            /> 
+            <TextInput
+              //style={{height: 30,fontSize:20, backgroundColor:'#ffffff'}}
+              style={{height: 30, borderWidth: 1, padding: 4, borderColor: '#000000', borderRadius: 15, width: 375, fontSize:20, backgroundColor:'#ffffff'}}
+              placeholder="Your Address Here..."
+              onChangeText={(val) => { this.changeAddressHandler(val) }}
+            />      
           
             <View style={{alignItems: 'center'}}>
                 <Text style={{fontSize:5}}> </Text>
@@ -68,7 +105,13 @@ export default class VerifyScreen extends Component {
 
             {/*Cards Load Under Here*/}
             <View style = {styles.footer}>
-            
+              <FlatList  
+                data={this.state.restaurantList.results}
+                keyExtractor={(item) => item.place_id}
+                renderItem={({item}) => (
+                  <Text>{item.name}{'\n'}{item.vicinity}{'\n--------------------------------------------------------------------------'}</Text>
+                )}
+              />
             </View>
         </View>
 

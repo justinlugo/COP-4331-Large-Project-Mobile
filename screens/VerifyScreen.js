@@ -1,6 +1,5 @@
 import React, { Component, useState } from 'react';
-import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet } from 'react-native';
-import { isExpired, decodeToken } from "react-jwt";
+import { ActivityIndicator, Dimensions, Button, View, Text, TextInput, Image, StyleSheet, Linking} from 'react-native';
 
 export default class VerifyScreen extends Component {
 
@@ -18,6 +17,7 @@ export default class VerifyScreen extends Component {
 
   // Test Login/Password: VerifyTest1, 1234
 
+  /*
   CheckConfirm = async () => 
   {
     var bp = require('../components/Path.js');
@@ -87,6 +87,7 @@ export default class VerifyScreen extends Component {
       return;
     }
   }
+  */
   
   
   render(){
@@ -123,7 +124,8 @@ export default class VerifyScreen extends Component {
         <Button
           title="Verify"
           color='#001A5E'
-          onPress={this.CheckConfirm}
+          //onPress={this.CheckConfirm}
+          onPress={() => Linking.openURL('https://letsdothings.herokuapp.com/Login')}
         />
 
         <Text style={{fontSize:70}}> </Text>
