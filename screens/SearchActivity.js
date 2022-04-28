@@ -135,7 +135,7 @@ export default class SearchActivity extends Component {
             {/*Cards Load Under Here*/}
           <View style = {styles.footer}>
               
-            <Text> Tourist Attractions: </Text>
+            <Text style = {styles.underline}>Tourist Attractions: </Text>
 
               <FlatList  
                   data={this.state.attractionList.results}
@@ -146,9 +146,11 @@ export default class SearchActivity extends Component {
                 />
             </View>
 
+            <Text style={{fontSize:5}}> </Text>
+
             <View style = {styles.footer}>
   
-                <Text> Bowling Alleys: </Text>
+                <Text style = {styles.underline}>Bowling Alleys: </Text>
   
                   <FlatList  
                     data={this.state.bowlingList.results}
@@ -159,9 +161,11 @@ export default class SearchActivity extends Component {
                   />
               </View>
 
+              <Text style={{fontSize:5}}> </Text>
+
               <View style = {styles.footer}>
                   
-                  <Text> Movie Theaters: </Text>
+                  <Text style = {styles.underline}>Movie Theaters: </Text>
                   
                   <FlatList  
                     data={this.state.theaterList.results}
@@ -245,5 +249,9 @@ const styles = StyleSheet.create({
   textSign: {
     color: 'white',
     fontWeight: 'bold'
+  },
+  underline : {
+    textDecorationLine: 'underline',
+    textAlign: 'center'
   }
 });
